@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Event Listener</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; min-height: 200px; overflow-y: scroll; }
+        .message { background-color: #f0f0f0; margin-bottom: 5px; padding: 8px; border-radius: 4px; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>RabbitMQ to WebSocket Microservice</h1>
+    <h2>Received Events:</h2>
+    <div id="messages"></div>
+
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('/ws-events'); // Connect to the WebSocket endpoint
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                // Subscribe to the topic where events will be broadcasted
+                stompClient.subscribe('/topic/events', function (eventMessage) {
+                    showMessage(JSON.parse(eventMessage.body));
+                });
+            }, function (error) {
+                console.error('STOMP error: ' + error);
+                setTimeout(connect, 5000); // Attempt to reconnect on error
+            });
+        }
+
+        function showMessage(message) {
+            var messagesDiv = document.getElementById('messages');
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `
+                <strong>Type:</strong> ${message.type}<br>
+                <strong>Payload:</strong> ${message.payload}<br>
+                <strong>Timestamp:</strong> ${message.timestamp}<br>
+                <strong>Source:</strong> ${message.source}
+            `;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to bottom
+        }
+
+        window.onload = connect; // Connect when the page loads
+    </script>
+</body>
+</html>

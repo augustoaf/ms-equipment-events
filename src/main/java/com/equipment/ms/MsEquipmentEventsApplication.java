@@ -1,4 +1,4 @@
-package com.equipment.ms.ms_equipment_events;
+package com.equipment.ms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
