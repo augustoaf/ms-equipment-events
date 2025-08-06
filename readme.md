@@ -1,11 +1,11 @@
 ## RabbitMQ to WebSocket Microservice
-This project is a Spring Boot microservice designed to consume events from a RabbitMQ topic exchange and broadcast them in real-time to connected web applications via WebSocket connections using STOMP.
+This project is a Spring Boot microservice designed to consume events from a RabbitMQ queue and broadcast them in real-time to connected web applications via WebSocket connections using STOMP.
 
 ## Features
-RabbitMQ Integration: Connects to a RabbitMQ topic exchange to listen for incoming events.
+RabbitMQ Integration: Connects to a RabbitMQ queue to listen for incoming events.
 WebSocket Broadcasting: Uses Spring WebSockets with STOMP to push events to subscribed clients.
 Real-time Updates: Enables web applications to receive immediate updates as events occur in RabbitMQ.
-Scalable Architecture: Provides a foundation for building real-time event-driven systems.
+Scalable Architecture: In order to be scalable, each Microservice instance needs to have its own queue (known as "consumer group" by others message brokers) to broadcast all the events to all connected web clients (if all microservices instances reading from the same queue, there will be load balancing among the events to each consumer).
 
 ## Technologies Used
 Spring Boot: Framework for building standalone, production-grade Spring applications.
@@ -42,23 +42,17 @@ run.bat
 The application will start on http://localhost:8080 by default.
 
 ## How to Test
-Simulate RabbitMQ Producer
+
+Simulate RabbitMQ Producer:
 You can send test messages to your RabbitMQ setup using the RabbitMQ management UI:
 Open your browser and go to http://localhost:15672.
 Log in with guest/guest.
-Navigate to Exchanges and click on the event.topic.exchange.
+Navigate to Exchanges and click on the exchange created.
 Scroll down to the Publish message section.
-Set the Routing Key (e.g., user.event.created, order.event.updated, any.event.type).
-In the Payload text area, enter a JSON message matching the Event structure:
-{
-"type": "USER_CREATED",
-"payload": "{"userId": "456", "username": "newuser"}",
-"timestamp": "2025-08-05T19:00:00",
-"source": "AuthService"
-}
-Click the Publish message button.
-Connect with WebSocket Client
-The project includes a simple index.html file that acts as a WebSocket client to display received events.
+Set the Routing Key if not a fanout exchange (e.g., user.event.created, order.event.updated, any.event.type).
+In the Payload text area, enter a JSON message matching your Event structure and publish.
+
+Connect with WebSocket Client:
 Ensure your Spring Boot application is running.
 Open your web browser and go to http://localhost:8080/index.html.
 As you publish messages to RabbitMQ (as described above), you should see them appear in real-time on this HTML page.

@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Spring Boot Web Starter (for general web capabilities and embedded Tomcat) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -44,19 +50,20 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Spring Boot Test Starter -->
+        <!-- Spring Boot Test Starter 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Spring AMQP Test (for testing RabbitMQ components) -->
+        -->
+        <!-- Spring AMQP Test (for testing RabbitMQ components) 
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit-test</artifactId>
             <scope>test</scope>
         </dependency>
+        -->
     </dependencies>
 
     <build>

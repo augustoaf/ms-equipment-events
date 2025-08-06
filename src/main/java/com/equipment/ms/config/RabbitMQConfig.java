@@ -1,9 +1,10 @@
 package com.equipment.ms.config;
 
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.AnonymousQueue;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -19,46 +20,46 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.queue.name}")
     private String queueName;
 
-    @Value("${rabbitmq.topic.exchange.name}")
-    private String topicExchangeName;
+    @Value("${rabbitmq.exchange.name}")
+    private String fanoutExchangeName;
 
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
     /**
-     * Defines a durable queue in RabbitMQ.
-     * A durable queue survives broker restarts.
+     * Defines a queue in RabbitMQ.
      *
      * @return The configured Queue bean.
      */
     @Bean
     public Queue queue() {
-        return new Queue(queueName, true); // true means durable
+        //return new Queue(queueName, true); // queue with a harcoded name and durable
+        return new AnonymousQueue(); // queue with a random queue name, non-durable and auto-deleted when this service goes down
     }
 
     /**
-     * Defines a Topic Exchange in RabbitMQ.
-     * Topic exchanges route messages to queues based on a routing key pattern.
+     * Defines a Fanout Exchange in RabbitMQ.
+     * Fanout exchanges route messages to all queues binded.
      *
-     * @return The configured TopicExchange bean.
+     * @return The configured FanoutExchange bean.
      */
     @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(topicExchangeName);
+    public FanoutExchange exchange() {
+        return new FanoutExchange(fanoutExchangeName, true, false); //durable fanout exchange
     }
 
     /**
-     * Binds the queue to the topic exchange with a specific routing key.
-     * Messages sent to the exchange with a routing key matching this pattern
-     * will be delivered to this queue.
+     * Binds the queue to the fanout exchange.
+     * Messages sent to the exchange will be replicated to all 
+     * AnonymousQueue created (distinct queues created for each microservice instance).
      *
      * @param queue The Queue bean.
-     * @param exchange The TopicExchange bean.
+     * @param exchange The FanoutExchange bean.
      * @return The configured Binding bean.
      */
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+    public Binding binding(Queue queue, FanoutExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange);
     }
 
     /**
