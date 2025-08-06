@@ -39,7 +39,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // .withSockJS() enables SockJS fallback options for browsers that don't support WebSockets.
         // .setAllowedOrigins("*") allows connections from any origin (be cautious in production).
         registry.addEndpoint("/ws-events")
-                .setAllowedOrigins("*") // Consider restricting this to specific origins in production
+                .setAllowedOriginPatterns("*", "null") // Consider restricting this to specific origins in production. null for when you assess the html directly from the disk (like double click on the file)
+                //.setAllowedOrigins("http://localhost:8080") // place the web origins
                 .withSockJS();
     }
 }

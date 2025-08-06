@@ -21,7 +21,7 @@
         var stompClient = null;
 
         function connect() {
-            var socket = new SockJS('/ws-events'); // Connect to the WebSocket endpoint
+            var socket = new SockJS('http://localhost:8080/ws-events'); // Connect to the WebSocket endpoint
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, function (frame) {
@@ -41,13 +41,16 @@
             var messageElement = document.createElement('div');
             messageElement.classList.add('message');
             messageElement.innerHTML = `
-                <strong>Type:</strong> ${message.type}<br>
-                <strong>Payload:</strong> ${message.payload}<br>
+                <strong>Equipment ID:</strong> ${message.equipment_id}<br>
+                <strong>Temperature:</strong> ${message.temperature}<br>
+                <strong>Oil Level:</strong> ${message.oil_level}<br>
                 <strong>Timestamp:</strong> ${message.timestamp}<br>
-                <strong>Source:</strong> ${message.source}
             `;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to bottom
+            //messagesDiv.appendChild(messageElement);
+            //messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to bottom
+            //Show the latest message on top
+            messagesDiv.prepend(messageElement);
+            messagesDiv.scrollTop = 0;
         }
 
         window.onload = connect; // Connect when the page loads
