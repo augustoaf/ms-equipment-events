@@ -74,17 +74,19 @@ public class RabbitMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
+    //NOTE: Bean currently not in use for this service.
     /**
-     * Configures the RabbitTemplate, which is used to send and receive messages.
+     * Configures the RabbitTemplate, which is used to send messages. 
      * It's set up to use the custom JSON message converter.
-     *
+     * 
      * @param connectionFactory The RabbitMQ connection factory.
+     * @param jsonMessageConverter The MessageConverter Bean
      * @return The configured RabbitTemplate bean.
      */
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter jsonMessageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter);
         return rabbitTemplate;
     }
 }
