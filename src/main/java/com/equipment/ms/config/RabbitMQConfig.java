@@ -12,6 +12,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 
 @Configuration
 public class RabbitMQConfig {
@@ -25,6 +28,27 @@ public class RabbitMQConfig {
 
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+
+    // Declare a custom 'Listener Factory' Bean, then refer to the @RabbitListener annotation, 
+    // otherwise Spring Boot will inject a default Listener Factory
+    @Bean(name = "myListenerFactory")
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+            SimpleRabbitListenerContainerFactoryConfigurer configurer,
+            ConnectionFactory connectionFactory) {
+        
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        configurer.configure(factory, connectionFactory);
+        
+        // Set acknowledgment mode 
+        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+
+        // enable the listener to process messages in parallel (using multiple threads) 
+        // if you need ordering, use a single thread, then do not need to set these parameters
+        factory.setConcurrentConsumers(2);
+        factory.setMaxConcurrentConsumers(3);
+        
+        return factory;
+    }
 
     /**
      * Defines a queue in RabbitMQ.

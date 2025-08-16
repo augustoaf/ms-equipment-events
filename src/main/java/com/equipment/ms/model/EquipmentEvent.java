@@ -130,17 +130,6 @@ public class EquipmentEvent implements Serializable {
                Objects.equals(timestamp, that.timestamp);
     }
 
-    /**
-     * The hashCode method is essential for using this class in hash-based collections
-     * like HashMap or HashSet. The contract states that if two objects are equal
-     * according to the equals() method, then their hash code must be the same.
-     *
-     * We use a combination of the hash codes of all relevant fields to generate a unique
-     * hash code for each object. The Objects.hash() utility method is the recommended way
-     * to do this in modern Java, as it provides a robust and concise way to combine hash codes.
-     *
-     * @return The hash code for this object.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(equipmentId, temperature, power, oilLevel, timestamp);
